@@ -5,6 +5,7 @@
 // LICENSE file in the root directory of this source tree.
 
 // rows x groups x planes -> groups x rows x planes
+#include<iostream>
 template <typename T>
 at::Tensor rule_index_select(at::Tensor src, Int nRules, Int *rules,
                              Int groups) {
@@ -134,6 +135,9 @@ double cpu_SubmanifoldConvolution_updateOutput(
   auto groups = weight.size(1);
   auto ip = weight.size(2);
   auto op = weight.size(3);
+
+  std::cout << "groups: " << groups << " ip: " << ip << " op: " << op << " rules_size: " << (Int)_rules.size() << "\n"; 
+
   for (Int i = 0; i < (Int)_rules.size(); ++i) {
     auto r = _rules[i];
     Int nRules = r.size() / 2;

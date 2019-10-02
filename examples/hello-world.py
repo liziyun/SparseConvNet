@@ -58,6 +58,8 @@ locations = torch.LongTensor(locations)
 features = torch.FloatTensor(features)
 input.set_locations(locations, features, 0)
 
+#print(input.type)
+
 model.train()
 if use_cuda:
     input.cuda()

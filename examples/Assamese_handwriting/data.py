@@ -28,6 +28,8 @@ class Data(torch.utils.data.Dataset):
             strokes=[]
             features=[]
             for k,stroke in enumerate(self.data[j]['input']):
+                #print(k)
+                #print(stroke)
                 if len(stroke)>1:
                     stroke=stroke.float()/255-0.5
                     stroke*=scale-1e-3

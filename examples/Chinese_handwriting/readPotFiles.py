@@ -456,10 +456,12 @@ def readPOTfile(name, clist):
             labels.append(label)
             characters.append([torch.FloatTensor(stroke)
                                for stroke in strokes])
+        #print([characters, labels])
     return [characters, labels]
 
 
 for dataset, f1, f2 in [('train', 1001, 1240), ('test', 1241, 1300)]:
+#for dataset, f1, f2 in [('train', 1001, 1020), ('test', 1021, 1025)]:
     chars = []
     labels = []
     for f in range(f1, f2 + 1):

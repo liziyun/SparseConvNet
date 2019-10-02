@@ -6,6 +6,7 @@
 
 #ifndef INPUTLAYER_H
 #define INPUTLAYER_H
+#include<iostream>
 
 // Rulebook Format
 // rules[0][0] == mode
@@ -24,6 +25,9 @@ void inputLayerRules(SparseGrids<dimension> &SGs, RuleBook &rules, long *coords,
   assert(SGs.size() == 0);
   SGs.resize(batchSize); // Set a minimum batch size if necessary
   Point<dimension> p;
+
+  //std::cout << "<<<Ziyun LI>>>: inputLayerRules\n";
+  //std::cout << "<<<Ziyun LI>>>: dimension: " << dimension << " nInputRows: " << nInputRows << " nInputColumns: " << nInputColumns << " batchSize: " << batchSize << " mode: " << mode << " nActive: " << nActive << "\n";
 
   if (mode == 0) {
     nActive = nInputRows;
