@@ -15,7 +15,7 @@ this_dir = os.path.dirname(os.path.realpath(__file__))
 torch_dir = os.path.dirname(torch.__file__)
 conda_include_dir = '/'.join(torch_dir.split('/')[:-4]) + '/include'
 
-extra = {'cxx': ['-std=c++11', '-fopenmp', '-I/usr/local/cuda/include'], 'nvcc': ['-std=c++11', '-Xcompiler', '-fopenmp']}
+extra = {'cxx': ['-std=c++11', '-fopenmp', '-I/usr/local/cuda/include'], 'nvcc': ['-std=c++11', '-Xcompiler', '-fopenmp', '-ccbin=/usr/bin/cuda-g++', '-I/usr/local/cuda/include']}
 
 setup(
     name='sparseconvnet',

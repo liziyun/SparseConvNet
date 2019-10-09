@@ -24,6 +24,8 @@ classes=['Airplane', 'Bag',      'Cap',        'Car',
          'Pistol',   'Rocket',   'Skateboard', 'Table']
 nClasses=[4, 2, 2, 4, 4, 3, 3, 2, 4, 2, 6, 2, 3, 3, 3, 3]
 classOffsets=np.cumsum([0]+nClasses)
+#print("classOffset\n")
+#print(classOffsets)
 
 def init(c,resolution=50,sz=50*8+8,batchSize=16):
     globals()['categ']=c
@@ -38,9 +40,21 @@ def init(c,resolution=50,sz=50*8+8,batchSize=16):
         globals()['nClassesTotal']=int(nClasses[categ])
 
 def load(xF, c, classOffset, nc):
+    #print("xF\n")
+    #print(xF)
     xl=np.loadtxt(xF[0])
+    #print("xl\n")
+    #print(xl)
+    #print("norm max\n")
+    #print((xl**2).sum(1))
     xl/= ((xl**2).sum(1).max()**0.5)
+    #print("xl normalized\n")
+    #print(xl)
     y = np.loadtxt(xF[0][:-9]+'seg').astype('int64')+classOffset-1
+    #print("y\n")
+    #print(y)
+    #print("c\n")
+    #print(c)
     return (xF[0], xl, y, c, classOffset, nc, np.random.randint(1e6))
 
 def train():
@@ -69,12 +83,30 @@ def train():
         classOffset_=[]
         nClasses_=[]
         nPoints_=[]
+        #print("tbl\n")
+        #print(tbl)
         np_random=np.random.RandomState([x[-1] for x in tbl])
+        #print("np_random\n")
+        #print(np_random)
         for _, xl, y, categ, classOffset, nClasses, idx in tbl:
             m=np.eye(3,dtype='float32')
+            #print("m\n")
+            #print(m)
             m[0,0]*=np_random.randint(0,2)*2-1
+            #print("m\n")
+            #print(m)
+            #print("qr\n")
+            #print(np_random.randn(3,3))
             m=np.dot(m,np.linalg.qr(np_random.randn(3,3))[0])
+            #print("m\n")
+            #print(m)
+            #print("xl\n")
+            #print(xl)
             xl=np.dot(xl,m)
+            #print("xl\n")
+            #print(xl)
+            #print("additive\n")
+            #print(np_random.uniform(-1,1,(1,3)).astype('float32'))
             xl+=np_random.uniform(-1,1,(1,3)).astype('float32')
             xl=np.floor(resolution*(4+xl)).astype('int64')
             xf=np.ones((xl.shape[0],1)).astype('float32')
