@@ -129,6 +129,134 @@ def SparseVggNet(dimension, nInputPlanes, layers):
             m.add(scn.BatchNormReLU(nPlanes))
     return m
 
+###liziyun
+def DepthWiseSparseVggNet(dimension, nInputPlanes, layers):
+    """
+    VGG style nets
+    Use submanifold convolutions
+    Also implements 'Plus'-augmented nets
+    """
+    nPlanes = nInputPlanes
+    m = scn.Sequential()
+    for x in layers:
+        if x == 'MP':
+            m.add(scn.MaxPooling(dimension, 3, 2))
+        elif x[0] == 'MP':
+            m.add(scn.MaxPooling(dimension, x[1], x[2]))
+        elif x == 'C3/2':
+            m.add(scn.Convolution(dimension, nPlanes, nPlanes, 3, 2, False))
+            m.add(scn.BatchNormReLU(nPlanes))
+        elif x[0] == 'C3/2':
+            m.add(scn.Convolution(dimension, nPlanes, x[1], 3, 2, False))
+            nPlanes = x[1]
+            m.add(scn.BatchNormReLU(nPlanes))
+        elif x[0] == 'C' and len(x) == 2:
+            m.add(scn.SubmanifoldConvolution(dimension, nPlanes, 1, 3, False))
+            m.add(scn.BatchNormReLU(1))
+            m.add(scn.SubmanifoldConvolution(dimension, 1, x[1], 3, False))
+            nPlanes = x[1]
+            m.add(scn.BatchNormReLU(nPlanes))
+        elif x[0] == 'C' and len(x) == 3:
+            m.add(scn.ConcatTable()
+                  .add(
+                scn.SubmanifoldConvolution(dimension, nPlanes, x[1], 3, False)
+            ).add(
+                scn.Sequential()
+                .add(scn.Convolution(dimension, nPlanes, x[2], 3, 2, False))
+                .add(scn.BatchNormReLU(x[2]))
+                .add(scn.SubmanifoldConvolution(dimension, x[2], x[2], 3, False))
+                .add(scn.BatchNormReLU(x[2]))
+                .add(scn.Deconvolution(dimension, x[2], x[2], 3, 2, False))
+            )).add(scn.JoinTable())
+            nPlanes = x[1] + x[2]
+            m.add(scn.BatchNormReLU(nPlanes))
+        elif x[0] == 'C' and len(x) == 4:
+            m.add(scn.ConcatTable()
+                  .add(
+                scn.SubmanifoldConvolution(dimension, nPlanes, x[1], 3, False)
+            )
+                .add(
+                scn.Sequential()
+                .add(scn.Convolution(dimension, nPlanes, x[2], 3, 2, False))
+                .add(scn.BatchNormReLU(x[2]))
+                .add(scn.SubmanifoldConvolution(dimension, x[2], x[2], 3, False))
+                .add(scn.BatchNormReLU(x[2]))
+                .add(scn.Deconvolution(dimension, x[2], x[2], 3, 2, False))
+            )
+                .add(scn.Sequential()
+                     .add(scn.Convolution(dimension, nPlanes, x[3], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[3], x[3], 3, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.Convolution(dimension, x[3], x[3], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[3], x[3], 3, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.Deconvolution(dimension, x[3], x[3], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[3], x[3], 3, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.Deconvolution(dimension, x[3], x[3], 3, 2, False))
+                     )).add(scn.JoinTable())
+            nPlanes = x[1] + x[2] + x[3]
+            m.add(scn.BatchNormReLU(nPlanes))
+        elif x[0] == 'C' and len(x) == 5:
+            m.add(scn.ConcatTable()
+                  .add(
+                scn.SubmanifoldConvolution(dimension, nPlanes, x[1], 3, False)
+            )
+                .add(
+                scn.Sequential()
+                .add(scn.Convolution(dimension, nPlanes, x[2], 3, 2, False))
+                .add(scn.BatchNormReLU(x[2]))
+                .add(scn.SubmanifoldConvolution(dimension, x[2], x[2], 3, False))
+                .add(scn.BatchNormReLU(x[2]))
+                .add(scn.Deconvolution(dimension, x[2], x[2], 3, 2, False))
+            )
+                .add(scn.Sequential()
+                     .add(scn.Convolution(dimension, nPlanes, x[3], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[3], x[3], 3, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.Convolution(dimension, x[3], x[3], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[3], x[3], 3, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.Deconvolution(dimension, x[3], x[3], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[3], x[3], 3, False))
+                     .add(scn.BatchNormReLU(x[3]))
+                     .add(scn.Deconvolution(dimension, x[3], x[3], 3, 2, False))
+                     )
+                .add(scn.Sequential()
+                     .add(scn.Convolution(dimension, nPlanes, x[4], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[4], x[4], 3, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.Convolution(dimension, x[4], x[4], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[4], x[4], 3, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.Convolution(dimension, x[4], x[4], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[4], x[4], 3, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.Deconvolution(dimension, x[4], x[4], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[4], x[4], 3, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.Deconvolution(dimension, x[4], x[4], 3, 2, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.SubmanifoldConvolution(dimension, x[4], x[4], 3, False))
+                     .add(scn.BatchNormReLU(x[4]))
+                     .add(scn.Deconvolution(dimension, x[4], x[4], 3, 2, False))
+                     )).add(scn.JoinTable())
+            nPlanes = x[1] + x[2] + x[3] + x[4]
+            m.add(scn.BatchNormReLU(nPlanes))
+    return m
+
+
+
 def SparseResNet(dimension, nInputPlanes, layers):
     """
     pre-activated ResNet
@@ -310,6 +438,65 @@ def FullyConvolutionalNet(dimension, reps, nPlanes, residual_blocks=False, downs
         return m
     m = U(nPlanes)
     return m
+
+###liziyun
+def DepthWiseFullyConvolutionalNet(dimension, reps, nPlanes, residual_blocks=False, downsample=[2, 2]):
+    """
+    Fully-convolutional style network with VGG or ResNet-style blocks.
+    For voxel level prediction:
+    import sparseconvnet as scn
+    import torch.nn
+    class Model(nn.Module):
+        def __init__(self):
+            nn.Module.__init__(self)
+            self.sparseModel = scn.Sequential().add(
+               scn.SubmanifoldConvolution(3, nInputFeatures, 64, 3, False)).add(
+               scn.FullyConvolutionalNet(3, 2, [64, 128, 192, 256], residual_blocks=True, downsample=[2, 2]))
+            self.linear = nn.Linear(64+128+192+256, nClasses)
+        def forward(self,x):
+            x=self.sparseModel(x).features
+            x=self.linear(x)
+            return x
+    """
+    def block(m, a, b):
+        if residual_blocks: #ResNet style blocks
+            m.add(scn.ConcatTable()
+                  .add(scn.Identity() if a == b else scn.NetworkInNetwork(a, b, False))
+                  .add(scn.Sequential()
+                    .add(scn.BatchNormReLU(a))
+                    .add(scn.SubmanifoldConvolution(dimension, a, b, 3, False))
+                    .add(scn.BatchNormReLU(b))
+                    .add(scn.SubmanifoldConvolution(dimension, b, b, 3, False)))
+             ).add(scn.AddTable())
+        else: #VGG style blocks
+            m.add(scn.Sequential()
+                 .add(scn.BatchNormReLU(a))
+                 .add(scn.SubmanifoldConvolution(dimension, a, 1, 3, False))
+                 .add(scn.BatchNormReLU(1))
+                 .add(scn.SubmanifoldConvolution(dimension, 1, b, 1, False)))
+    def U(nPlanes): #Recursive function
+        m = scn.Sequential()
+        if len(nPlanes) == 1:
+            for _ in range(reps):
+                block(m, nPlanes[0], nPlanes[0])
+        else:
+            m = scn.Sequential()
+            for _ in range(reps):
+                block(m, nPlanes[0], nPlanes[0])
+            m.add(
+                scn.ConcatTable().add(
+                    scn.Identity()).add(
+                    scn.Sequential().add(
+                        scn.BatchNormReLU(nPlanes[0])).add(
+                        scn.Convolution(dimension, nPlanes[0], nPlanes[1],
+                            downsample[0], downsample[1], False)).add(
+                        U(nPlanes[1:])).add(
+                        scn.UnPooling(dimension, downsample[0], downsample[1]))))
+            m.add(scn.JoinTable())
+        return m
+    m = U(nPlanes)
+    return m
+
 
 def FullConvolutionalNetIntegratedLinear(dimension, reps, nPlanes, nClasses=-1, residual=False, downsample=[2,2], leakiness=0):
     if nClasses==-1:

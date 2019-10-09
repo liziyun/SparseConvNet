@@ -32,6 +32,12 @@ class SubmanifoldConvolution(Module):
         output = SparseConvNetTensor()
         output.metadata = input.metadata
         output.spatial_size = input.spatial_size
+
+        #print("submanifold NN input spatial size\n")
+        #print(input.spatial_size)
+        #print("submanifold NN input spatial locations\n")
+        #print(input.get_spatial_locations)
+
         output.features = SubmanifoldConvolutionFunction.apply(
             input.features,
             self.weight,
@@ -40,6 +46,12 @@ class SubmanifoldConvolution(Module):
             input.spatial_size,
             self.dimension,
             self.filter_size)
+
+        #print("submanifold NN output spatial size\n")
+        #print(output.spatial_size)
+        #print("submanifold NN spatial locations\n")
+        #print(output.get_spatial_locations)
+
         return output
 
     def __repr__(self):
