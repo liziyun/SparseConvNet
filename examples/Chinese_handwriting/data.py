@@ -88,15 +88,21 @@ def MergeFn(spatial_size=63):
         features=[]
         for idx,char in enumerate(tbl):
             coords=char['coords']+center
+            #print("coords raw\n")
+            #print(coords)
             coords = torch.cat([coords.long(),torch.LongTensor([idx]).expand([coords.size(0),1])],1)
             locations.append(coords)
-            print("locations\n")
-            print(locations)
+            #print("coords\n")
+            #print(coords)
             f=char['features']
+            print("feature raw\n")
+            print(f)
             f = torch.cat([f,torch.ones([f.size(0),1])],1)
+            print("feature\n")
+            print(f)
             features.append(f)
-            print("features\n")
-            print(features)
+            #print("features\n")
+            #print(features)
         return {'input': scn.InputLayerInput(torch.cat(locations,0), torch.cat(features,0)), 'target': torch.LongTensor(targets)}
     return merge
 
@@ -104,5 +110,5 @@ def MergeFn(spatial_size=63):
 def get_iterators(*args):
     #return {'train': torch.utils.data.DataLoader(Data('pickle/train.pickle'), collate_fn=MergeFn(), batch_size=100, shuffle=True, num_workers=10),
     #        'val': torch.utils.data.DataLoader(Data('pickle/test.pickle'), collate_fn=MergeFn(), batch_size=100, shuffle=True, num_workers=10)}
-    return {'train': torch.utils.data.DataLoader(Data('pickle/train.pickle'), collate_fn=MergeFn(), batch_size=32, shuffle=True, num_workers=10),
-            'val': torch.utils.data.DataLoader(Data('pickle/test.pickle'), collate_fn=MergeFn(), batch_size=32, shuffle=True, num_workers=10)}
+    return {'train': torch.utils.data.DataLoader(Data('pickle/train.pickle'), collate_fn=MergeFn(), batch_size=32, shuffle=True, num_workers=1),
+            'val': torch.utils.data.DataLoader(Data('pickle/test.pickle'), collate_fn=MergeFn(), batch_size=32, shuffle=True, num_workers=1)}

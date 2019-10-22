@@ -135,7 +135,7 @@ for epoch in range(p['epoch'], p['n_epochs'] + 1):
         #print(batch['x'][0])
         #print("features\n")
         #print(batch['x'][1])
-        batch['y']=batch['y'].type(dtypei)
+        batch['y']=batch['y'].type(dtype)
         #print("labels\n")
         #print(batch['y'])
         batch['mask']=batch['mask'].type(dtype)

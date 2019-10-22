@@ -471,9 +471,9 @@ def DepthWiseFullyConvolutionalNet(dimension, reps, nPlanes, residual_blocks=Fal
         else: #VGG style blocks
             m.add(scn.Sequential()
                  .add(scn.BatchNormReLU(a))
-                 .add(scn.SubmanifoldConvolution(dimension, a, 1, 3, False))
-                 .add(scn.BatchNormReLU(1))
-                 .add(scn.SubmanifoldConvolution(dimension, 1, b, 1, False)))
+                 .add(scn.SubmanifoldConvolution(dimension, a, a, 3, False, a))
+                 #.add(scn.BatchNormReLU(a))
+                 .add(scn.SubmanifoldConvolution(dimension, a, b, 1, False)))
     def U(nPlanes): #Recursive function
         m = scn.Sequential()
         if len(nPlanes) == 1:
